@@ -1,0 +1,13 @@
+---
+title: "SINSM"
+format: html
+editor: visual
+---
+
+## Preliminaries
+
+Loading packages.
+
+```{r}
+library(tidyverse)
+```
