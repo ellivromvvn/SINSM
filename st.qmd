@@ -1,0 +1,46 @@
+---
+title: "Spatiotemporal Analysis"
+author: "Orville D. Hombrebueno"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(RColorBrewer)
+library(maps)
+```
+
+```{r}
+mydata <- read.csv("C:/Users/mildo/Downloads/covid_cases.csv")
+```
+
+```{r}
+cases <- mydata[,1]
+city <- mydata[,2]
+date <- mydata[,3]
+```
+
+```{r}
+p <- ggplot(mydata, aes(City, Date, fill = Cases))
+p + geom_tile() +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5)) +
+  scale_fill_distiller(palette = "Blues", direction = 1) +
+  ggtitle("NCR's Weekly COVID-19 Positive Cases")
+```
+
+```{r}
+states_map <- map_data("state")
+states_map
+```
+
+::: panel-tabset
+## A
+
+```{r}
+ggplot(states_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black")
+```
+
+## B
+:::

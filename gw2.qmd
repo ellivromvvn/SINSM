@@ -1,0 +1,170 @@
+---
+title: "Guided Workshop 2"
+author: "Orville D. Hombrebueno"
+format: html
+editor: visual
+---
+
+## Loading Libraries
+
+These are the libraries needed for the activity.
+
+```{r}
+#| warning: false
+#| message: false
+
+library(ggplot2)
+library(tidyverse)
+library(ggpmisc)
+library(dplyr)
+```
+
+## Loading and Creating a Subset
+
+```{r}
+#| message: false
+#| warning: false
+
+covid_raw <- read.csv("C:/Users/mildo/Downloads/covid.csv")
+covid_raw <- covid_raw[c('AgeGroup','Sex','DateRepConf','RegionRes')]
+covid_raw$DateRepConf <- as.Date(covid_raw$DateRepConf) 
+covid_raw$Count <- rep(1,nrow(covid_raw))
+covid <- covid_raw |>
+  group_by(RegionRes, DateRepConf) |>
+  summarise(Count = sum(Count)) |>
+  ungroup()
+```
+
+## Plotting Exercise 1
+
+1.  Generate a modified plot of the time series data for the confirmed cases in CAR. Save this plot in a file named “Covid_cases_CAR.pdf”.
+
+    ```{r}
+    covid_car <- covid |> 
+      filter(RegionRes == "CAR") |>
+      group_by(DateRepConf = DateRepConf) |>
+      ungroup()
+    ```
+
+    ```{r}
+     covid_car |>
+      ggplot(aes(DateRepConf, Count)) +
+      geom_point(pch = 20, color = "violet", size = 5) +
+      geom_line(lwd = 1, color = "red") +
+      labs(
+        title = "Covid Cases in CAR",
+        x = "Date",
+        y = "Confirmed Cases"
+      ) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size = 15),
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        axis.text = element_text(size = 15)
+      )
+    ```
+
+2.  Generate a modified plot of the time series data for the confirmed cases in all regions of the Philippines. Create a personalized color library and use this to differentiate the time series for each region. Save this plot in a file named “Covid_cases_All_Regions.pdf”.
+
+    ```{r}
+    covid_all <- covid |>
+      group_by(DateRepConf = DateRepConf) |>
+      ungroup()
+    ```
+
+    ```{r}
+    covid_all |>
+      ggplot(
+        aes(DateRepConf, Count, color = as.factor(RegionRes))
+      ) +
+      geom_line() +
+      labs(
+        title = "Covid Cases by Region",
+        x = "Date",
+        y = "Confirmed Cases"
+      ) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size = 15),
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        axis.text = element_text(size = 10)
+      )
+    ```
+
+## Creating `covid_NL` Subset
+
+```{r}
+#| message: false
+#| warning: false
+
+covid_NL <- covid_raw |>
+  group_by(AgeGroup, RegionRes, DateRepConf) |>
+  summarise(Count = sum(Count)) |>
+  ungroup()
+```
+
+```{r}
+covid_NL <- covid_NL |>
+  filter(
+    RegionRes %in%
+      c('CAR','Region I: Ilocos Region',
+        'Region II: Cagayan Valley',
+        'Region III: Central Luzon'),
+    AgeGroup %in%
+      c('10 to 14', '25 to 29',
+        '40 to 44', '60 to 64')
+  )
+```
+
+## Plotting Exercise 2
+
+1.  Generate a modified SINGLE plot of ALL the time series data for the confirmed cases in the four regions included in the data. Save this plot in a file named “Covid_cases_NL.pdf”.
+
+    ```{r}
+    covid_NL |>
+      ggplot(
+        aes(DateRepConf, Count, color = as.factor(RegionRes))
+      ) +
+      geom_line() +
+      labs(
+        title = "Covid Cases by Regions in Northern Luzon",
+        x = "Date",
+        y = "Confirmed Cases",
+        color = "Region"
+      ) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size = 13),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text = element_text(size = 10),
+      )
+    ```
+
+2.  Use the `facet_wrap` function to generate four plots containing the time series data for the confirmed cases in all regions in the subset data. Save this plot in a file named “Covid_cases_NL_facet.pdf”.
+
+    ```{r}
+    covid_NL |>
+      ggplot(
+        aes(DateRepConf, Count, color=as.factor(AgeGroup))
+      ) +
+      geom_line(aes(DateRepConf, Count)) +
+      facet_wrap(~RegionRes, ncol = 1) +
+      guides(
+        color = guide_legend(title = "Age Group")
+      ) +
+      labs(
+        title = "Covid Cases By Regions in Northern Luzon",
+        x = "Date",
+        y = "Confirmed Cases"
+      ) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size=15),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
+        axis.text = element_text(size=8)
+      )
+    ```
