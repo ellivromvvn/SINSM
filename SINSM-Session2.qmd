@@ -1,0 +1,89 @@
+---
+title: "SINSM Statistical Analysis: Session 2"
+format: html
+editor: visual
+---
+
+## Preliminaries
+
+Loading packages.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(ggpmisc)
+```
+
+Load and view the data.
+
+```{r}
+data <- read.csv("~/R/SINSM/data/gait.csv")
+head(data)
+```
+
+Sampling the data.
+
+```{r}
+data_sample1 <- data |>
+  filter(
+    subject == 1,
+    condition == 1,
+    replication == 1,
+    leg == 1,
+    joint == 1
+  ) |>
+  group_by(time = time) |>
+  ungroup()
+```
+
+Plot the dataset.
+
+```{r}
+data_sample1 |>
+  ggplot(aes(time, angle)) +
+  geom_point(
+    pch = 20,
+    color = "violet",
+    size = 5
+  ) +
+  geom_line(
+    lwd = 1,
+    color = "red"
+  ) +
+  geom_hline(
+    yintercept = 0,
+    color = "green",
+    lwd = 1
+  ) +
+  labs(
+    title = "Time Series 1",
+    x = "Time",
+    y = "Angle"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(
+      size = 15,
+      color = "blue",
+      hjust = 0.5
+    ),
+    axis.title.x = element_text(
+      size = 15,
+      color = "black"
+    ),
+    axis.title.y = element_text(
+      size = 15,
+      color = "black"
+    ),
+    axis.text = element_text(
+      size = 15,
+      color = "red"
+    )
+  )
+```
+
+Improve plot
+
+```{r}
+
+```
